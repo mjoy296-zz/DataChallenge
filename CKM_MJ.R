@@ -11,6 +11,7 @@ comps = read.csv('./CompData.csv')
 nrow(comps)
 head(comps)
 
+#convert change_ts to timestamps
 comps$change_ts <- substr(comps$change_ts, 1, nchar(comps$change_ts) - 3)
 comps$change_ts <- as.numeric(comps$change_ts)
 comps$change_ts <- anytime(comps$change_ts)
@@ -20,9 +21,10 @@ comps$change_ts <- anytime(comps$change_ts)
 # comps$component_name <- gsub("(^|[^0-9])0+", "\\1", comps$component_name) 
 comps$component_name <- as.character(comps$component_name)
 
+#sort file by component names and it's timestamp
 ordered = comps %>%
   arrange(component_name, change_ts)
-write.csv(ordered, "Ordered.csv")
+#write.csv(ordered, "Ordered.csv")
 
 ##from this i can see the process that each component goes through
 # component0: YBSFJ_00_01 -> JX3UO_01_01 -> ZZU3X_02_00 -> B57X3_03_00 -> ASSEMBLY
@@ -37,10 +39,8 @@ target3 <- c("ZZU3X_02_00", "HUX1L_02_02", "ZAENM_02_01")
 target4 <- c("B57X3_03_00", "29MSJ_03_01", "7EFLOP_03_02")
 target5 <- "assembly room"
 
-o2 = ordered %>%
-      spread(., status, change_ts)
-
-
+t <- c(target)
+#filter by starting and final location to get difference
 times = ordered1 %>%
   group_by(component_type) %>%
   filter(., location %in% target) 
@@ -52,7 +52,7 @@ times2$location <- NULL
 times2 <- times2[!duplicated(times2), ]
 colSums(is.na(times2))
 
-
+#spread to get status as columns to get difference btw first and final
 r <- times2 %>% 
   group_by(., component_name) %>%
   spread(., status, change_ts) %>%
