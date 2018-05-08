@@ -39,7 +39,24 @@ target3 <- c("ZZU3X_02_00", "HUX1L_02_02", "ZAENM_02_01")
 target4 <- c("B57X3_03_00", "29MSJ_03_01", "7EFLOP_03_02")
 target5 <- "assembly room"
 
-t <- c(target)
+
+#get rate of ouput
+roo <- ordered %>%
+  filter(., location %in% target) %>%
+  group_by(., component_type, location) %>%
+  count(., component_type) %>%
+  mutate(., stat = ifelse(location == "assembly room", "end", "initial")) %>%
+  arrange(., component_type, n) 
+
+roo$location <- NULL
+
+rates <- roo %>%
+  ungroup() %>%
+  spread(., stat, n) %>%
+  mutate(., rate_output = (end/initial) * 100)
+rates
+##component 3 has worst rate of output at 5.23%
+
 #filter by starting and final location to get difference
 times = ordered1 %>%
   group_by(component_type) %>%
