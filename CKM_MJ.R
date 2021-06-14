@@ -200,4 +200,3 @@ daily_agg <- daily %>% group_by(., location, change_ts, component_type) %>%
 daily3 <- daily_agg %>% filter(., component_type == "component_3", location %in% path3)
 
 daily3
-l
